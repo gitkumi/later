@@ -128,6 +128,8 @@ defmodule Later.Commands do
     |> parse_command()
     |> verify_command()
     |> parse_args(args)
+    |> merge_args()
+    |> check_required_params()
   end
 
   defp parse_command(list) do
@@ -139,7 +141,7 @@ defmodule Later.Commands do
   defp verify_command(command) do
     @commands
     |> Enum.map(fn c -> c.name end)
-    |> Enum.find(:error, fn name -> name == command end)
+    |> Enum.find(:show, fn name -> name == command end)
   end
 
   defp parse_args(:help, _args), do: :help
@@ -158,6 +160,25 @@ defmodule Later.Commands do
       end)
 
     {command, args}
+  end
+
+  defp merge_args({command, args}), do: {command, Enum.reduce(args, fn param, params -> Map.merge(param, params) end)}
+
+  defp check_required_params({command, args}) do
+    @commands
+    |> Enum.find(fn c -> c.name == command end)
+    |> Map.get(:parameters)
+    |> Enum.filter(fn p -> p.required end)
+    |> Enum.map(fn p -> p.name end)
+    |> Enum.reject(fn param -> args[param] != nil end)
+    |> case do
+      [] ->
+        {command, args}
+      
+      missing -> 
+        # Right now there's only 1 required params for each command.
+        {:error, %Error{:reason => "Invalid command. Missing value: #{Enum.at(missing, 0)}"}}
+    end
   end
 
   defp get_command(name), do: Enum.find(@commands, fn c -> c.name == name end)

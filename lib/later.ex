@@ -2,23 +2,23 @@ defmodule Later do
   alias Later.IO, as: LaterIO
   alias Later.{Print, Utilities}
 
-  def show([%{:id => nil}]) do
+  def show(%{:id => nil}) do
     LaterIO.read_file()
     |> Print.main()
   end
 
-  def show([%{:id => id}]) do
+  def show(%{:id => id}) do
     LaterIO.read_file()
     |> Enum.find(fn t -> t.id == String.to_integer(id) end)
     |> Print.main()
   end
 
   def add(todo) do
-    todo = Utilities.convert_to_todo_struct(todo)
+    todos = LaterIO.read_file()
+    todo  = create_todo_struct(todos, todo)
 
-    LaterIO.read_file()
-    |> generate_id(todo)
-    |> merge_todos()
+    todos
+    |> merge_todos(todo)
     |> LaterIO.save_file()
     |> Print.main()
   end
@@ -40,26 +40,24 @@ defmodule Later do
     |> Print.main()
   end
 
-  def delete([%{:id => id}]) do
+  def delete(%{:id => id}) do
     LaterIO.read_file()
     |> Enum.filter(fn t -> t.id != String.to_integer(id) end)
     |> LaterIO.save_file()
     |> Print.main()
   end
 
-  defp generate_id(todos, todo) do
+  defp create_todo_struct(todos, todo) do
     id =
       todos
       |> Enum.max_by(fn t -> t.id end)
       |> Map.get(:id)
       |> Kernel.+(1)
 
-    {todos, Map.put(todo, :id, id)}
+    todo
+    |> Map.put(:id, id)
+    |> Utilities.convert_to_todo_struct()
   end
 
-  defp merge_todos(todos, todo) do
-    Enum.concat(todos, [todo])
-  end
-
-  defp merge_todos({todos, todo}), do: Enum.concat(todos, [todo])
+  defp merge_todos(todos, todo), do: Enum.concat(todos, [todo])
 end
