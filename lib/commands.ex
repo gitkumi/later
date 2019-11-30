@@ -192,6 +192,8 @@ defmodule Later.Commands do
 
   defp convert_params_type(:help), do: :help
 
+  defp convert_params_type({:error, params}), do: {:error, params}
+
   defp convert_params_type({command, params}) do
     converted =
       for {key, val} <- params, val != nil, into: %{} do

@@ -2,7 +2,7 @@ defmodule Later.IO do
   alias Later.Utilities
 
   @root_dir "#{System.user_home()}/.later"
-  @todos_file_name "todos.json"
+  @todos_file_name Application.fetch_env!(:later, :file_name)
   @todos_dir "#{@root_dir}/#{@todos_file_name}"
 
   # @finished_todos_file_name "finished_todos.json"
