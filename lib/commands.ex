@@ -71,7 +71,7 @@ defmodule Later.Commands do
         },
         %Example{
           :command =>
-            "later -e 1 \"Take out the garbage on Tuesday.\" \"Also disposed pet bottles\"",
+            "later -e 1 \"Take out the garbage on Tuesday.\" \"Also dispose pet bottles.\"",
           :comment => "Edit todo #1's title and todo #1's description."
         }
       ],
