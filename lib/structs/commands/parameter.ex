@@ -1,3 +1,3 @@
 defmodule Later.Command.Parameter do
-  defstruct [:name, :required]
+  defstruct [:name, :required, :type]
 end

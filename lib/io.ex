@@ -12,11 +12,11 @@ defmodule Later.IO do
     with {:ok, json} <- File.read(@todos_dir),
          {:ok, todos} <- Utilities.json_to_map(json) do
       todos
-      |> Enum.map(fn t -> 
+      |> Enum.map(fn t ->
         t
         |> Utilities.atomize_keys()
         |> Utilities.convert_to_todo_struct()
-       end)
+      end)
     else
       {:error, :enoent} ->
         initialize_file()

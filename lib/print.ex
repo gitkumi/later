@@ -6,6 +6,22 @@ defmodule Later.Print do
   @repo_link "https://github.com/gitkumi/later"
   @tab "    "
 
+  def main(nil) do
+    IO.puts(" ")
+    IO.puts("Todo not found.")
+    IO.puts(" ")
+
+    :ok
+  end
+
+  def main([]) do
+    IO.puts(" ")
+    IO.puts("Your list is empty.")
+    IO.puts(" ")
+
+    :ok
+  end
+
   def main(todos) when is_list(todos) do
     IO.puts(" ")
     IO.puts("#{@tab}#{ansi_bright()}Todos#{ansi_normal()}")
@@ -21,7 +37,7 @@ defmodule Later.Print do
     print_todo(todo)
     IO.puts(" ")
 
-    if Map.has_key?(todo, :description) do
+    if Map.get(todo, :description) != nil do
       IO.puts("#{@tab}- #{todo.description}")
       IO.puts(" ")
     end
@@ -38,8 +54,10 @@ defmodule Later.Print do
     IO.puts("#{@tab}#{@repo_link}")
     IO.puts(" ")
     IO.puts("#{@tab}#{ansi_bright()}Commands#{ansi_normal()}")
-    Enum.each(Commands.get_commands(), fn m -> print_help(m) end)
+    Enum.each(Commands.get_commands(), fn command -> print_help(command) end)
     IO.puts(" ")
+
+    :ok
   end
 
   def error(args) do
@@ -69,21 +87,33 @@ defmodule Later.Print do
       IO.puts(" ")
       IO.puts("#{@tab}#{@tab}#{@tab}#{ansi_bright()}parameters#{ansi_normal()}")
 
-      Enum.each(command_parameters, fn a ->
-        IO.puts(
-          "#{@tab}#{@tab}#{@tab}#{a.name} #{
-            if a.required, do: "#{ansi_faint()}(required)#{ansi_normal()}"
+      Enum.each(command_parameters, fn param ->
+        msg =
+          "#{@tab}#{@tab}#{@tab}#{param.name} #{
+            "#{ansi_faint()}(#{param.type})#{ansi_normal()}#{
+              if param.required, do: "#{ansi_faint()} (required)#{ansi_normal()}"
+            }"
           }"
-        )
+
+        IO.puts(msg)
       end)
     end
 
     if command_examples do
       IO.puts(" ")
-      IO.puts("#{@tab}#{@tab}#{@tab}#{ansi_bright()}examples#{ansi_normal()}")
 
-      Enum.each(command_examples, fn e ->
-        IO.puts("#{@tab}#{@tab}#{@tab}#{e.command} #{ansi_faint()}# #{e.comment}#{ansi_normal()}")
+      IO.puts(
+        "#{@tab}#{@tab}#{@tab}#{ansi_bright()}#{
+          if Enum.count(command_examples) <= 1, do: "example", else: "examples"
+        }#{ansi_normal()}"
+      )
+
+      Enum.each(command_examples, fn example ->
+        IO.puts(
+          "#{@tab}#{@tab}#{@tab}#{example.command} #{ansi_faint()}# #{example.comment}#{
+            ansi_normal()
+          }"
+        )
       end)
     end
   end
