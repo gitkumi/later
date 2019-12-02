@@ -5,7 +5,6 @@ defmodule LaterTest do
 
   setup_all do
     IO.puts("Starting test..")
-    # {:ok, recipient: :world}
   end
 
   test "help" do

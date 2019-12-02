@@ -133,8 +133,8 @@ defmodule Later.Commands do
 
     parsed
     |> parse_command()
-    |> get_command()
-    |> parse_args(args)
+    |> get_command(args)
+    |> parse_args()
     |> merge_params()
     |> check_required_params()
     |> convert_params_type()
@@ -146,14 +146,20 @@ defmodule Later.Commands do
     |> Enum.at(0)
   end
 
-  defp get_command(command_name) do
+  # If args is empty, set default to :show
+  defp get_command(command_name, []) do
     show = Enum.find(@commands, fn c -> c.name == :show end)
-    Enum.find(@commands, show, fn c -> c.name == command_name end)
+    {Enum.find(@commands, show, fn c -> c.name == command_name end), []}
   end
 
-  defp parse_args(%{:name => :help}, _args), do: :help
+  defp get_command(command_name, args) do
+    {Enum.find(@commands, :error, fn c -> c.name == command_name end), args}
+  end
 
-  defp parse_args(command, input_args) do
+  defp parse_args({:error, _args}), do: {:error, %Error{:reason => "Invalid command. "}}
+  defp parse_args({%{:name => :help}, _args}), do: :help
+
+  defp parse_args({command, input_args}) do
     params =
       command
       |> Map.get(:parameters)
@@ -168,11 +174,15 @@ defmodule Later.Commands do
   end
 
   defp merge_params(:help), do: :help
+  defp merge_params({:error, args}), do: {:error, args}
 
-  defp merge_params({command, params}),
-    do: {command, Enum.reduce(params, fn current, acc -> Map.merge(current, acc) end)}
+  defp merge_params({command, params}) do
+    {command, Enum.reduce(params, fn current, acc -> Map.merge(current, acc) end)}
+  end
 
   defp check_required_params(:help), do: :help
+
+  defp check_required_params({:error, args}), do: {:error, args}
 
   defp check_required_params({command, params}) do
     command
