@@ -12,14 +12,14 @@ You need Elixir.
 2. `cd` into the project directory.
    
 3. Build the project.
-- `MIX_ENV=prod mix escript.build` This will generate a bin file. 
+- `mix deps.get && MIX_ENV=prod mix escript.build` This will generate a bin file. 
 
 4. Install the generated bin.
-- `mix escript.install /path/to/project/later/later`
+- `mix escript.install later`
 
-5. It will be installed on `/home/user/.mix/escripts`
+5. It will be installed on `/home/user/.mix/escripts` or `/home/user/.asdf/installs/elixir/<version>/.mix/escripts` if you are using asdf-vm.
 
-6. Add `/home/user/.mix/escripts` to your `$PATH` variable to run the program anywhere.
+6. Add the directory to your `$PATH` variable to run the program anywhere.
 
 7. Run `later -h` to see how to use it.
 
