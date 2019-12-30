@@ -23,6 +23,8 @@ You need Elixir.
 
 7. Run `later -h` to see how to use it.
 
+![help](/docs/help.png)
+
 ## FAQ
 
 1. Why is this not written on Go or Python?!?!
