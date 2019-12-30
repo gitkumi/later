@@ -4,7 +4,7 @@ defmodule Later.Print do
   @help_title "Later"
   @help_description "Log it now, do it later. Todo list on your terminal written on Elixir."
   @repo_link "https://github.com/gitkumi/later"
-  @tab "    "
+  @tab "  "
 
   def main(nil) do
     IO.puts(" ")
